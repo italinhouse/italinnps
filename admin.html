@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ital'in House — Admin NPS</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Lora:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --red:       #C8102E;
+    --red-dark:  #9E0B22;
+    --red-light: #F8E8EB;
+    --white:     #FFFFFF;
+    --off-white: #FAF9F7;
+    --gray-100:  #F4F2EF;
+    --gray-200:  #E8E4DF;
+    --gray-400:  #9E9890;
+    --gray-700:  #4A4540;
+    --black:     #1A1714;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Montserrat', sans-serif; background: var(--off-white); color: var(--black); min-height: 100vh; }
+
+  /* NAV */
+  .nav {
+    background: var(--black); display: flex; align-items: center;
+    justify-content: space-between; padding: 0 28px; height: 56px;
+    box-shadow: 0 2px 16px rgba(0,0,0,.3);
+  }
+  .nav-left { display: flex; align-items: center; gap: 14px; }
+  .nav-logo img { height: 30px; filter: brightness(0) invert(1); }
+  .nav-badge { background: var(--red); color: #fff; border-radius: 6px; padding: 4px 10px; font-size: .68rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+  .nav-right { font-size: .72rem; color: rgba(255,255,255,.4); letter-spacing: 1px; }
+
+  /* LAYOUT */
+  .wrap { max-width: 980px; margin: 0 auto; padding: 44px 24px 60px; }
+  .page-title { font-family: 'Lora', serif; font-size: 1.9rem; margin-bottom: 6px; }
+  .page-sub { color: var(--gray-400); font-size: .85rem; margin-bottom: 36px; line-height: 1.6; }
+
+  /* CARDS */
+  .box { background: var(--white); border-radius: 20px; box-shadow: 0 4px 24px rgba(26,23,20,.08); overflow: hidden; margin-bottom: 24px; }
+  .box-header { padding: 20px 28px 16px; border-bottom: 1px solid var(--gray-100); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+  .box-title { font-family: 'Lora', serif; font-size: 1.1rem; }
+  .box-body { padding: 24px 28px; }
+
+  /* FORM */
+  .form-row { display: flex; gap: 12px; align-items: flex-end; }
+  .form-field { display: flex; flex-direction: column; gap: 6px; flex: 1; }
+  label { font-size: .7rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--gray-700); }
+  select {
+    border: 2px solid var(--gray-200); border-radius: 10px;
+    padding: 11px 14px; font-family: 'Montserrat', sans-serif;
+    font-size: .85rem; color: var(--black); outline: none;
+    transition: border-color .2s; background: var(--white); appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239E9890' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 14px center;
+    padding-right: 36px;
+  }
+  select:focus { border-color: var(--red); }
+
+  .gen-btn {
+    background: var(--red); color: #fff; border: none; border-radius: 10px;
+    padding: 12px 24px; font-family: 'Montserrat', sans-serif;
+    font-size: .82rem; font-weight: 700; cursor: pointer;
+    white-space: nowrap; transition: all .2s; letter-spacing: .5px;
+  }
+  .gen-btn:hover { background: var(--red-dark); transform: translateY(-1px); }
+
+  /* RESULTADO */
+  .result-box { display: none; margin-top: 20px; background: var(--gray-100); border-radius: 14px; padding: 20px 22px; }
+  .result-box.show { display: block; }
+  .result-label { font-size: .68rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--gray-400); margin-bottom: 10px; }
+  .link-row { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .link-text { flex: 1; background: #fff; border: 2px solid var(--gray-200); border-radius: 8px; padding: 10px 14px; font-size: .78rem; color: var(--red); word-break: break-all; }
+  .copy-btn { background: var(--black); color: #fff; border: none; border-radius: 8px; padding: 10px 16px; font-family: 'Montserrat', sans-serif; font-size: .75rem; font-weight: 700; cursor: pointer; white-space: nowrap; transition: all .2s; }
+  .copy-btn:hover { background: var(--red); }
+
+  .wa-msg-box { background: #E8F8EF; border-left: 3px solid #25D366; border-radius: 10px; padding: 14px 16px; font-size: .79rem; line-height: 1.7; color: #1a5c2a; white-space: pre-line; margin-bottom: 12px; }
+  .wa-btn { display: inline-flex; align-items: center; gap: 8px; background: #25D366; color: #fff; border: none; border-radius: 8px; padding: 10px 20px; font-family: 'Montserrat', sans-serif; font-size: .82rem; font-weight: 700; cursor: pointer; transition: all .2s; text-decoration: none; }
+  .wa-btn:hover { background: #1ebe5a; }
+
+  /* TABELA */
+  .table-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .search-input { border: 2px solid var(--gray-200); border-radius: 8px; padding: 8px 14px; font-family: 'Montserrat', sans-serif; font-size: .8rem; outline: none; width: 240px; transition: border-color .2s; }
+  .search-input:focus { border-color: var(--red); }
+  .action-btn { border: none; border-radius: 8px; padding: 9px 16px; font-family: 'Montserrat', sans-serif; font-size: .75rem; font-weight: 700; cursor: pointer; transition: all .2s; }
+  .action-btn.dark { background: var(--black); color: #fff; }
+  .action-btn.dark:hover { background: var(--red); }
+  .action-btn.red { background: var(--red); color: #fff; }
+  .action-btn.red:hover { background: var(--red-dark); }
+  .count-badge { background: var(--red-light); color: var(--red); border-radius: 100px; padding: 3px 10px; font-size: .72rem; font-weight: 700; }
+
+  .table-wrap { max-height: 500px; overflow-y: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: .79rem; }
+  th { background: var(--black); color: rgba(255,255,255,.65); font-weight: 700; font-size: .65rem; letter-spacing: 1.5px; text-transform: uppercase; padding: 11px 16px; text-align: left; position: sticky; top: 0; z-index: 5; }
+  td { padding: 10px 16px; border-bottom: 1px solid var(--gray-100); vertical-align: middle; }
+  tr:hover td { background: var(--off-white); }
+  tr:last-child td { border-bottom: none; }
+  .idx { color: var(--gray-400); font-size: .7rem; }
+  .store-name { font-weight: 600; }
+  .store-id { color: var(--gray-400); font-size: .7rem; font-family: monospace; }
+  .link-preview { color: var(--red); font-size: .7rem; max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .tbl-copy { background: none; border: 1.5px solid var(--gray-200); border-radius: 6px; padding: 4px 10px; font-size: .68rem; font-family: 'Montserrat', sans-serif; font-weight: 700; cursor: pointer; color: var(--red); transition: all .15s; }
+  .tbl-copy:hover { background: var(--red); color: #fff; border-color: var(--red); }
+  .tbl-wa { background: none; border: 1.5px solid #25D366; border-radius: 6px; padding: 4px 8px; font-size: .68rem; font-family: 'Montserrat', sans-serif; font-weight: 700; cursor: pointer; color: #25D366; transition: all .15s; margin-left: 4px; }
+  .tbl-wa:hover { background: #25D366; color: #fff; }
+
+  /* AVISO */
+  .info-banner { background: #FEF9EE; border: 1.5px solid #E8A020; border-radius: 12px; padding: 14px 18px; margin-bottom: 28px; display: flex; gap: 12px; align-items: flex-start; font-size: .82rem; line-height: 1.6; color: #6B4700; }
+  .info-icon { font-size: 1.2rem; flex-shrink: 0; }
+
+  @media(max-width:600px){
+    .form-row { flex-direction: column; }
+    .table-actions { flex-direction: column; align-items: stretch; }
+    .search-input { width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-left">
+    <img src="https://d7jztl9hjt0p1.cloudfront.net/1.0.0.119/assets/images/home/logo@3x.png" alt="Ital'in House" style="height:30px;filter:brightness(0) invert(1)"
+      onerror="this.style.display='none'">
+    <span class="nav-badge">⚙ Admin NPS</span>
+  </div>
+  <span class="nav-right">USO INTERNO — NÃO COMPARTILHE ESTE LINK</span>
+</nav>
+
+<div class="wrap">
+  <h1 class="page-title">Gerador de Links NPS</h1>
+  <p class="page-sub">Gere o link personalizado de cada loja e envie diretamente pelo WhatsApp.<br>O cliente clica e já cai na pesquisa da loja dele — sem precisar escolher nada.</p>
+
+  <div class="info-banner">
+    <span class="info-icon">⚠️</span>
+    <span>Esta página é de <strong>uso interno</strong>. O link que você envia ao cliente deve ser o da pesquisa (<code>index.html</code>), nunca desta página de administração.</span>
+  </div>
+
+  <!-- GERADOR INDIVIDUAL -->
+  <div class="box">
+    <div class="box-header">
+      <h2 class="box-title">⚡ Gerar link individual</h2>
+    </div>
+    <div class="box-body">
+      <div class="form-row">
+        <div class="form-field">
+          <label>Selecione a Loja</label>
+          <select id="sel-store">
+            <option value="">— escolha uma loja —</option>
+          </select>
+        </div>
+        <button class="gen-btn" onclick="generateLink()">Gerar Link</button>
+      </div>
+
+      <div class="result-box" id="result-box">
+        <p class="result-label">🔗 Link da pesquisa — copie e envie ao cliente</p>
+        <div class="link-row">
+          <div class="link-text" id="gen-link-text"></div>
+          <button class="copy-btn" onclick="copyText(document.getElementById('gen-link-text').textContent, this)">Copiar</button>
+        </div>
+        <p class="result-label">💬 Mensagem pronta para WhatsApp</p>
+        <div class="wa-msg-box" id="wa-preview"></div>
+        <a class="wa-btn" id="wa-btn" href="#" target="_blank">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          Abrir no WhatsApp
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABELA GERAL -->
+  <div class="box">
+    <div class="box-header">
+      <div style="display:flex;align-items:center;gap:10px">
+        <h2 class="box-title">Todas as Lojas</h2>
+        <span class="count-badge" id="count-badge">126 lojas</span>
+      </div>
+      <div class="table-actions">
+        <input class="search-input" type="text" placeholder="🔍  Buscar loja…" oninput="filterTable(this.value)">
+        <button class="action-btn red" onclick="copyAllCSV()">Copiar CSV</button>
+        <button class="action-btn dark" onclick="exportCSV()">⬇ Exportar CSV</button>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Loja</th>
+            <th>ID</th>
+            <th>Link NPS</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody id="stores-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+const LOJAS = [
+  ["Ital'in House - São Carlos", "SP-001"],
+  ["Ital'in House - Olímpia", "SP-002"],
+  ["Ital'in House - Barretos", "SP-003"],
+  ["Ital'in House - São José do Rio Preto", "SP-004"],
+  ["Ital'in House - Jaú", "SP-005"],
+  ["Ital'in House - Maceió", "AL-001"],
+  ["Ital'in House - Capão da Canoa", "RS-001"],
+  ["Ital'in House - Salvador - Pituba", "BA-001"],
+  ["Ital'in House - Mogi das Cruzes - Centro", "SP-006"],
+  ["Ital'in House - São Paulo - Campo Limpo", "SP-007"],
+  ["Ital'in House - Maringá - Parque Residencial Cidade Nova", "PR-001"],
+  ["Ital'in House - Indaiatuba - Centro", "SP-008"],
+  ["Ital'in House - Itatiba - Vila Brasileira", "SP-009"],
+  ["Ital'in House - Salto - Vila Teixeira", "SP-010"],
+  ["Ital'in House - Mauá - Vila Guarani", "SP-011"],
+  ["Ital'in House - Araxá - Centro", "MG-001"],
+  ["Ital'in House - Americana - Cidade Jardim I", "SP-012"],
+  ["Ital'in House - Santa Bárbara d'Oeste - Vila Santa Cruz", "SP-013"],
+  ["Ital'in House - Goiânia - Jardim América", "GO-001"],
+  ["Ital'in House - Rio de Janeiro - Barra da Tijuca", "RJ-001"],
+  ["Ital'in House - Governador Valadares - Centro", "MG-002"],
+  ["Ital'in House - Curitiba - Bairro Alto", "PR-002"],
+  ["Ital'in House - São Paulo - Vila Madalena", "SP-014"],
+  ["Ital'in House - São Bernardo do Campo - Rudge Ramos", "SP-015"],
+  ["Ital'in House - Praia Grande", "SP-016"],
+  ["Ital'in House - São Bernardo do Campo - Centro", "SP-017"],
+  ["Ital'in House - Botucatu - Centro", "SP-018"],
+  ["Ital'in House - Marília", "SP-019"],
+  ["Ital'in House - Catanduva - Centro", "SP-020"],
+  ["Ital'in House - Rio de Janeiro - Copacabana", "RJ-002"],
+  ["Ital'in House - Catalão - Setor Central", "GO-002"],
+  ["Ital'in House - Barueri - Alphaville", "SP-021"],
+  ["Ital'in House - Osasco - Vila Osasco", "SP-022"],
+  ["Ital'in House - Guarulhos - Centro", "SP-023"],
+  ["Ital'in House - Uberaba - Santa Maria", "MG-003"],
+  ["Ital'in House - João Pessoa - Expedicionários", "PB-001"],
+  ["Ital'in House - Santo André - Parque Marajoara", "SP-024"],
+  ["Ital'in House - Sorriso - Village II", "MT-001"],
+  ["Ital'in House - Brasília - Setor Sudoeste", "DF-001"],
+  ["Ital'in House - São Paulo - Taboão da Serra", "SP-025"],
+  ["Ital'in House - São Paulo - Vila Mariana", "SP-026"],
+  ["Ital'in House - Carapicuíba", "SP-027"],
+  ["Ital'in House - Birigui", "SP-028"],
+  ["Ital'in House - Rio de Janeiro - Recreio dos Bandeirantes", "RJ-003"],
+  ["Ital'in House - Cuiabá - Areão", "MT-002"],
+  ["Ital'in House - Itapetininga - Jardim Santa Inez", "SP-029"],
+  ["Ital'in House - Campo Largo - Centro", "PR-003"],
+  ["Ital'in House - Curitiba - Batel", "PR-004"],
+  ["Ital'in House - Betim - Inga Alto", "MG-004"],
+  ["Ital'in House - Bragança Paulista - Centro", "SP-030"],
+  ["Ital'in House - São Paulo - Anália Franco", "SP-031"],
+  ["Ital'in House - São Luís - Calhau", "MA-001"],
+  ["Ital'in House - São Paulo - São Miguel", "SP-032"],
+  ["Ital'in House - São Paulo - Vila Matilde", "SP-033"],
+  ["Ital'in House - Florianópolis - Centro", "SC-001"],
+  ["Ital'in House - Frutal - Centro", "MG-005"],
+  ["Ital'in House - Campos dos Goytacazes - Parque Pelinca", "RJ-004"],
+  ["Ital'in House - São Paulo - Jabaquara", "SP-034"],
+  ["Ital'in House - Lucas do Rio Verde - Alvorada", "MT-003"],
+  ["Ital'in House - Sumaré - Jardim São Carlos", "SP-035"],
+  ["Ital'in House - Balneário Camboriú - Centro", "SC-002"],
+  ["Ital'in House - Itajaí", "SC-003"],
+  ["Ital'in House - Porto Alegre - Passo da Areia", "RS-002"],
+  ["Ital'in House - Brusque", "SC-004"],
+  ["Ital'in House - Juiz de Fora - Paineiras", "MG-006"],
+  ["Ital'in House - Sinop - Setor Residencial Norte", "MT-004"],
+  ["Ital'in House - Arujá - Centro", "SP-036"],
+  ["Ital'in House - Santa Isabel - Centro", "SP-037"],
+  ["Ital'in House - Rio de Janeiro - Barra da Tijuca 2", "RJ-005"],
+  ["Ital'in House - Ibitinga - Centro", "SP-038"],
+  ["Ital'in House - Magé - Parque Sayonara", "RJ-006"],
+  ["Ital'in House - Jacareí - Loteamento Villa Branca", "SP-039"],
+  ["Ital'in House - Teresina - Ininga", "PI-001"],
+  ["Ital'in House - Araçatuba - Higienópolis", "SP-040"],
+  ["Ital'in House - Votuporanga - Santa Eliza", "SP-041"],
+  ["Ital'in House - São José - Jardim Cidade de Florianópolis", "SC-005"],
+  ["Ital'in House - São Paulo - Brooklin", "SP-042"],
+  ["Ital'in House - São Paulo - Interlagos", "SP-043"],
+  ["Ital'in House - Piracicaba - Cidade Alta", "SP-044"],
+  ["Ital'in House - São João da Boa Vista - Jardim Santo André", "SP-045"],
+  ["Ital'in House - Santo André - Campestre", "SP-046"],
+  ["Ital'in House - Canoas - Igara", "RS-003"],
+  ["Ital'in House - Esteio - Centro", "RS-004"],
+  ["Ital'in House - Jundiaí - Jardim São Miguel", "SP-047"],
+  ["Ital'in House - São José dos Campos - Bosque dos Eucaliptos", "SP-048"],
+  ["Ital'in House - Rio de Janeiro - Campo Grande", "RJ-007"],
+  ["Ital'in House - Guarujá - Pitangueiras", "SP-049"],
+  ["Ital'in House - Dourados - Jardim Caramuru", "MS-001"],
+  ["Ital'in House - Ipatinga - Veneza", "MG-007"],
+  ["Ital'in House - Uberlândia - Saraiva", "MG-008"],
+  ["Ital'in House - Ituiutaba - Centro", "MG-009"],
+  ["Ital'in House - Valinhos - Parque Florence", "SP-050"],
+  ["Ital'in House - Campo Grande - Jardim dos Estados", "MS-002"],
+  ["Ital'in House - Goiânia - Jardim América 2", "GO-003"],
+  ["Ital'in House - Parnaíba", "PI-002"],
+  ["Ital'in House - Belo Horizonte - Buritis", "MG-010"],
+  ["Ital'in House - Andradina - Centro", "SP-051"],
+  ["Ital'in House - Rondonópolis - Coophalis", "MT-005"],
+  ["Ital'in House - Bebedouro - Centro", "SP-052"],
+  ["Ital'in House - São Paulo - Mooca", "SP-053"],
+  ["Ital'in House - Taubaté - Centro", "SP-054"],
+  ["Ital'in House - Ponta Grossa - Centro", "PR-005"],
+  ["Ital'in House - Joinville - Santo Antônio", "SC-006"],
+  ["Ital'in House - São Paulo - Rio Claro", "SP-055"],
+  ["Ital'in House - Itapevi - Jardim Santa Rita", "SP-056"],
+  ["Ital'in House - Itupeva - Lagoa", "SP-057"],
+  ["Ital'in House - Araucária", "PR-006"],
+  ["Ital'in House - Caldas Novas", "GO-004"],
+  ["Ital'in House - São Paulo - São Mateus", "SP-058"],
+  ["Ital'in House - Ribeirão Pires - Centro", "SP-059"],
+  ["Ital'in House - Limeira", "SP-060"],
+  ["Ital'in House - Belo Horizonte - São Pedro", "MG-011"],
+  ["Ital'in House - Vitória", "ES-001"],
+  ["Ital'in House - Osasco - Baronesa", "SP-061"],
+  ["Ital'in House - Ourinhos", "SP-062"],
+  ["Ital'in House - São Vicente - Centro", "SP-063"],
+  ["Ital'in House - São Paulo - Freguesia do Ó", "SP-064"],
+  ["Ital'in House - Pindamonhangaba", "SP-065"],
+  ["Ital'in House - Leme", "SP-066"],
+  ["Ital'in House - Araras", "SP-067"],
+  ["Ital'in House - Fernandópolis", "SP-068"],
+  ["Ital'in House - Piracicaba 2", "SP-069"],
+  ["Ital'in House - Matão - Centro", "SP-070"],
+  ["Ital'in House - Araraquara", "SP-071"],
+  ["Ital'in House - Belo Horizonte - Santa Inês", "MG-012"],
+  ["Ital'in House - Sertãozinho - Centro", "SP-072"]
+];
+
+// Base URL aponta para index.html (a pesquisa)
+const BASE = window.location.href.replace('admin.html', 'index.html').split('?')[0];
+
+function makeLink(nome, id) {
+  return `${BASE}?loja=${encodeURIComponent(id)}&nome=${encodeURIComponent(nome)}`;
+}
+function makeMsg(nome, link) {
+  return `Olá! 😊\n\nObrigado pela sua primeira compra na ${nome}!\n\nGostaríamos muito de saber como foi sua experiência. Leva menos de 1 minutinho:\n👉 ${link}\n\nSua opinião é muito importante para nós! 🍝\n\n— Equipe Ital'in House`;
+}
+function copyText(text, btn) {
+  navigator.clipboard.writeText(text).then(() => {
+    if (btn) { const o = btn.textContent; btn.textContent = '✓ Copiado!'; setTimeout(() => btn.textContent = o, 1800); }
+  });
+}
+
+// Popula select
+const sel = document.getElementById('sel-store');
+LOJAS.forEach(([nome, id]) => {
+  const o = document.createElement('option');
+  o.value = id; o.textContent = nome; o.dataset.nome = nome;
+  sel.appendChild(o);
+});
+
+function generateLink() {
+  const id = sel.value;
+  if (!id) { alert('Selecione uma loja.'); return; }
+  const nome = sel.options[sel.selectedIndex].dataset.nome;
+  const link = makeLink(nome, id);
+  const msg  = makeMsg(nome, link);
+  document.getElementById('gen-link-text').textContent = link;
+  document.getElementById('wa-preview').textContent = msg;
+  document.getElementById('wa-btn').href = 'https://wa.me/?text=' + encodeURIComponent(msg);
+  document.getElementById('result-box').classList.add('show');
+}
+
+function buildTable(lojas) {
+  const tbody = document.getElementById('stores-tbody');
+  tbody.innerHTML = '';
+  document.getElementById('count-badge').textContent = lojas.length + ' lojas';
+  lojas.forEach(([nome, id], i) => {
+    const link = makeLink(nome, id);
+    const msg  = makeMsg(nome, link);
+    const tr   = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="idx">${i+1}</td>
+      <td class="store-name">${nome}</td>
+      <td class="store-id">${id}</td>
+      <td class="link-preview" title="${link}">${link}</td>
+      <td>
+        <button class="tbl-copy" onclick="copyText('${link.replace(/'/g,"\\'")}', this)">Copiar link</button>
+        <a class="tbl-wa" href="https://wa.me/?text=${encodeURIComponent(msg)}" target="_blank">WA</a>
+      </td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+function filterTable(q) {
+  buildTable(LOJAS.filter(([n]) => n.toLowerCase().includes(q.toLowerCase())));
+}
+
+function exportCSV() {
+  let csv = 'Nome da Loja,ID,Link NPS\n';
+  LOJAS.forEach(([n, id]) => { csv += `"${n}","${id}","${makeLink(n,id)}"\n`; });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], {type:'text/csv;charset=utf-8;'}));
+  a.download = 'italin-house-links-nps.csv'; a.click();
+}
+
+function copyAllCSV() {
+  let csv = 'Nome da Loja,ID,Link NPS\n';
+  LOJAS.forEach(([n, id]) => { csv += `"${n}","${id}","${makeLink(n,id)}"\n`; });
+  navigator.clipboard.writeText(csv);
+  const btn = event.target;
+  btn.textContent = '✓ Copiado!';
+  setTimeout(() => btn.textContent = 'Copiar CSV', 2000);
+}
+
+buildTable(LOJAS);
+</script>
+</body>
+</html>
